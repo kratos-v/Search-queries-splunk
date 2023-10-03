@@ -1,0 +1,5 @@
+index=<UTM/Firewall_index> sourcetype=<> dest_port=53 dest_zone=INET OR dest_zone=external NOT (<Exclusions>) 
+| search <Inclusions>
+| stats values(brand) as brand values(dev_phase) as dev_phase avg(bytes_out) as bytes_out sum(eval(if(action="allowed",bytes_out,0))) as bytes_allowed sum(eval(if(action="blocked",bytes_out,0))) as bytes_blocked sum(eval(if(action="allowed",packets_out,0))) as packets_allowed sum(eval(if(action="blocked",packets_out,0))) as packets_blocked earliest(_time) as _time  by src_ip dest_ip app transport 
+| eval avg_allowed_sz=bytes_allowed / packets_allowed, avg_blocked_sz=bytes_blocked / packets_blocked
+| where (packets_allowed > 10 OR packets_blocked > 10) AND (avg_allowed_sz > 200 OR avg_blocked_sz > 270)
