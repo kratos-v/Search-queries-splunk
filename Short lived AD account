@@ -1,0 +1,8 @@
+index=<Windows_index> (EventCode=4726 OR EventCode=4720) NOT (<Exclusions>)
+| eval time=_time
+| eval Security_ID=mvindex(Security_ID, 1)
+| eval create_time=case(EventCode="4720",time), delete_time=case(EventCode="4726",time)
+| stats values(create_time) as start_time, values(delete_time) as end_time, values(EventCode) as EventCode, values(user) as user, values(src_user) as src_user, values(dest_nt_domain) as dest_nt_domain, values(signature) as signature by Security_ID
+| where start_time<end_time
+| eval time_active(minutes)=round((end_time-start_time)/60, 0)
+| convert ctime(*_time)
