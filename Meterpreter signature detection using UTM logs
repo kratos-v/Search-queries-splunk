@@ -1,0 +1,6 @@
+index=<UTM_index> sourcetype=<source_type> (<Inclusion OR exclusions like IP's>) ((TERM(metasploit) OR TERM(meterpreter)) AND TERM(reverse))
+| fields + action, dest_ip, dest_port, file_name, signature, src_ip, url, user, _time
+| fillnull value="not present" file_name signature url
+| stats count by _time signature file_name action user src_ip dest_ip dest_port url
+| fields - count
+| sort _time
