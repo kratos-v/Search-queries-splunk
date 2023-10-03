@@ -1,0 +1,6 @@
+(index=<Linux_index> source="/var/log/secure" OR source="*auth.log"  sshd "for root" ("accepted password") )
+| rex field=_raw "from\s+(?P<src>\S+)\s+"
+| eval dest=host 
+| eval user="root"
+| bin _time span=1m 
+| stats _time, dest, src, user
